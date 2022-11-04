@@ -25,6 +25,6 @@ print(concheck)
 sensors,measurements,locations = import_excel_data()
 
 # add sensors, measurements and locations
-add_sensors(db,data=sensors)
-add_measurements(db,data=measurements)
-add_locations(db,data=locations)
+add_locations(db, data=locations)
+add_sensors(db, data=sensors)
+add_measurements(db, data=measurements)

@@ -14,12 +14,17 @@ metadata.schema = 'public'
 class Measurement(Base):
     __tablename__ = 'measurement'
 
-    id = Column(Integer, primary_key=True, server_default=text("nextval('contact_id_seq'::regclass)"))
+    id = Column(Integer,
+                primary_key=True,
+                server_default=text("nextval('contact_id_seq'::regclass)"))
     value = Column(Float(53))
     unit = Column(String)
-    sensor_id = Column(ForeignKey('sensor.id'))
+    sensor_id = Column(Integer,
+                       ForeignKey('sensor.id',ondelete='CASCADE'),
+                       nullable=False
+                       )
     timestmp = Column(DateTime)
-
+    sensor = relationship('Sensor', backref='measurement')
 
 class Sensor(Base):
     __tablename__ = 'sensor'
@@ -27,8 +32,11 @@ class Sensor(Base):
     id = Column(Integer, primary_key=True, server_default=text("nextval('deployment_id_seq'::regclass)"))
     name = Column(String, nullable=False, unique=True)
     type = Column(String)
-    location_id = Column(ForeignKey('location.id'))
+    location_id = Column(Integer,
+                         ForeignKey('location.id',ondelete='CASCADE'),
+                        nullable=False)
     installation_date = Column(DateTime)
+    location = relationship('Location', backref='sensor')
 
 
 class Location(Base):

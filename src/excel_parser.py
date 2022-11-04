@@ -18,7 +18,9 @@ def import_excel_data():
                              sheet_name='locaties',
                              engine='openpyxl',
                              keep_default_na=False)
-
+    locations['x'] = [float(x.split(",")[0]) for x in locations["coordinaten"]]
+    locations['y'] = [float(x.split(",")[1]) for x in locations["coordinaten"]]
+    locations['z'] = [float(x.split(",")[2]) for x in locations["coordinaten"]]
 
     # sensor
     sensors = pd.read_excel(open(file2read, 'rb'),
@@ -26,9 +28,7 @@ def import_excel_data():
                              engine='openpyxl',
                              keep_default_na=False)
 
-    sensors['x'] = sensors["coordinaten"][0]
-    sensors['y'] = sensors["coordinaten"][1]
-    sensors['z'] = sensors["coordinaten"][2]
+
 
     # measurements
     measurements = pd.read_excel(open(file2read, 'rb'),

@@ -124,8 +124,10 @@ def add_sensors(db,data):
                 value=item['name']))
 
             sensor_to_add = orm_file.Sensor()
+            sensor_to_add.name = item['name']
             sensor_to_add.type = item['type']
-            sensor_to_add.location_id = item['location']
+            id_to_add = session.query(orm_file.Location.id).filter(orm_file.Location.name == item["location"]).scalar()
+            sensor_to_add.location_id = id_to_add
             sensor_to_add.installation_date = item['installatie_datum']
             print(sensor_to_add)
             session.add(sensor_to_add)
@@ -136,14 +138,54 @@ def add_sensors(db,data):
                     value=item['name']))
     session.close()
 
-def add_measurements():
+
+def add_measurements(db,data):
     """
 
     :return:
     """
+    Session = sessionmaker(bind=db.sqla_engine)
+    session = Session()
+    # loop over data to add and check if data is already in the db. If not ==> add
+    for index, item in data.iterrows():
 
-def add_locations():
+            measurement_to_add = orm_file.Measurement()
+            measurement_to_add.value = item['value']
+            measurement_to_add.unit = item['unit']
+            id_to_add = session.query(orm_file.Sensor.id).filter(orm_file.Sensor.name == item["sensor"]).scalar()
+            measurement_to_add.sensor_id = id_to_add
+            measurement_to_add.timestmp = item["timestamp"]
+            print(measurement_to_add)
+            session.add(measurement_to_add)
+            session.commit()
+    session.close()
+
+
+def add_locations(db,data):
     """
 
     :return:
     """
+    Session = sessionmaker(bind=db.sqla_engine)
+    session = Session()
+    # loop over data to add and check if data is already in the db. If not ==> add
+    for index, item in data.iterrows():
+        exists = session.query(sqlalchemy.exists().where(orm_file.Location.name == item['locatie'])).scalar()
+        if not exists:
+            print('table: "Location" with column: "name" and value: {value} does not exist,  adding data'.format(
+                value=item['locatie']))
+
+            location_to_add = orm_file.Location()
+            location_to_add.name = item['locatie']
+            location_to_add.description = item['beschrijving']
+            location_to_add.x = item['x']
+            location_to_add.y = item['y']
+            location_to_add.z = item['z']
+            print(location_to_add)
+            session.add(location_to_add)
+            session.commit()
+        else:
+            print(
+                'table: "Location" with column: "name" and value: {value}  already existed, skip adding of data'.format(
+                    value=item['locatie']))
+    session.close()
